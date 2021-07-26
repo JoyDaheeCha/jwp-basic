@@ -8,14 +8,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class JdbcTemplate {
-    public void update(User user ) throws SQLException {
+    public void update(String sql) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         try {
             con = ConnectionManager.getConnection();
-            String sql = createQuery();
             pstmt = con.prepareStatement(sql);
-            setValue(user, pstmt);
+            setValue(pstmt);
 
             pstmt.executeUpdate();
         } finally {
@@ -29,9 +28,7 @@ public abstract class JdbcTemplate {
         }
     }
 
-    abstract String createQuery();
-
-    abstract void setValue(User user, PreparedStatement pstmt) throws SQLException ;
+    abstract void setValue(PreparedStatement pstmt) throws SQLException ;
 
 
 }

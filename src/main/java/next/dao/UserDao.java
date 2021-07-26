@@ -13,13 +13,9 @@ import next.model.User;
 public class UserDao {
     public void insert(User user) throws SQLException {
         JdbcTemplate insertTmplt = new JdbcTemplate(){
-            @Override
-            String createQuery() {
-                return "INSERT INTO USERS VALUES (?, ?, ?, ?)";
-            }
 
             @Override
-            void setValue(User user, PreparedStatement pstmt) throws SQLException {
+            void setValue(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getUserId());
                 pstmt.setString(2, user.getPassword());
                 pstmt.setString(3, user.getName());
@@ -27,25 +23,21 @@ public class UserDao {
             }
         };
 
-        insertTmplt.update(user);
+        insertTmplt.update("INSERT INTO USERS VALUES (?, ?, ?, ?)");
     }
 
     public void update(User user) throws SQLException {
         JdbcTemplate updateTmplt = new JdbcTemplate(){
-            @Override
-            String createQuery() {
-                return "UPDATE USERS SET password=?,name=?,email=? WHERE userId=?";
-            }
 
             @Override
-            void setValue(User user, PreparedStatement pstmt) throws SQLException {
+            void setValue(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getPassword());
                 pstmt.setString(2, user.getName());
                 pstmt.setString(3, user.getEmail());
                 pstmt.setString(4, user.getUserId());
             }
         };
-        updateTmplt.update(user);
+        updateTmplt.update("UPDATE USERS SET password=?,name=?,email=? WHERE userId=?");
     }
 
     public List<User> findAll() throws SQLException {
