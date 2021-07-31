@@ -13,6 +13,12 @@ public class UserDao {
         JdbcTemplate insertTmplt = new JdbcTemplate(){
 
             @Override
+            Object mapRow(ResultSet rs) throws SQLException {
+                // 불필요
+                return new Object();
+            }
+
+            @Override
             void setValues(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getUserId());
                 pstmt.setString(2, user.getPassword());
@@ -28,6 +34,12 @@ public class UserDao {
         JdbcTemplate updateTmplt = new JdbcTemplate(){
 
             @Override
+            Object mapRow(ResultSet rs) throws SQLException {
+                // 불필요
+                return new Object();
+            }
+
+            @Override
             void setValues(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getPassword());
                 pstmt.setString(2, user.getName());
@@ -39,7 +51,7 @@ public class UserDao {
     }
 
     public List<User> findAll() throws SQLException {
-        SelectJdbcTemplate selectTmplt = new SelectJdbcTemplate() {
+        JdbcTemplate selectTmplt = new JdbcTemplate() {
             @Override
             Object mapRow(ResultSet rs) throws SQLException {
                 List<User> users = new ArrayList<>();
@@ -62,7 +74,7 @@ public class UserDao {
 
 
     public User findByUserId(String userId) throws SQLException {
-        SelectJdbcTemplate selectTmplt = new SelectJdbcTemplate() {
+        JdbcTemplate selectTmplt = new JdbcTemplate() {
             @Override
             Object mapRow(ResultSet rs) throws SQLException {
                 User user = null;
