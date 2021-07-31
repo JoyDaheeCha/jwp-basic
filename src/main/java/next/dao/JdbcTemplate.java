@@ -7,8 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JdbcTemplate {
-    public Object query(String sql, RowMapper rowMapper) {
+public class JdbcTemplate<T> {
+    public T query(String sql, RowMapper<T> rowMapper) {
         try {
             Connection con = ConnectionManager.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -21,7 +21,7 @@ public class JdbcTemplate {
         }
     }
 
-    public Object queryForObject(String sql, PreparedStatementSetter psSetter, RowMapper rowMapper){
+    public T queryForObject(String sql, PreparedStatementSetter psSetter, RowMapper<T> rowMapper){
         try {
             Connection con = ConnectionManager.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);

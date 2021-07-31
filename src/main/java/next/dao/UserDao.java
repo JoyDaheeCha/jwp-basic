@@ -2,6 +2,7 @@ package next.dao;
 
 import next.model.User;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,9 @@ public class UserDao {
     }
 
     public List<User> findAll() {
-        JdbcTemplate selectTmplt = new JdbcTemplate();
+        JdbcTemplate<List<User>> selectTmplt = new JdbcTemplate();
 
-        RowMapper rowMapper = rs -> {
+        RowMapper<List<User>> rowMapper = rs -> {
             List<User> users = new ArrayList<>();
             if (rs.next()) {
                 users.add(new User(rs.getString("userId"),
@@ -44,18 +45,18 @@ public class UserDao {
             return users;
         };
 
-        return (List<User>) selectTmplt.query("SELECT userId, password, name, email FROM USERS", rowMapper);
+        return selectTmplt.query("SELECT userId, password, name, email FROM USERS", rowMapper);
     }
 
 
     public User findByUserId(String userId) {
-        JdbcTemplate selectTmplt = new JdbcTemplate();
+        JdbcTemplate<User> selectTmplt = new JdbcTemplate();
 
         PreparedStatementSetter psSetter = pstmt -> {
             pstmt.setString(1, userId);
         };
 
-        RowMapper rowMapper = rs -> {
+        RowMapper<User> rowMapper = rs -> {
             User user = null;
             try {
                 if (rs.next()) {
@@ -68,6 +69,6 @@ public class UserDao {
             return user;
         };
 
-        return (User) selectTmplt.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?", psSetter, rowMapper);
+        return selectTmplt.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?", psSetter, rowMapper);
     }
 }
