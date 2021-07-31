@@ -8,67 +8,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class JdbcTemplate {
-    public Object query(String sql, RowMapper rowMapper) throws SQLException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs;
+    public Object query(String sql, RowMapper rowMapper) {
         try {
-            con = ConnectionManager.getConnection();
-            pstmt = con.prepareStatement(sql);
-            rs = pstmt.executeQuery();
+            Connection con = ConnectionManager.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
             return rowMapper.mapRow(rs);
 
-        } finally {
-            if (pstmt != null) {
-                pstmt.close();
-            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
 
-            if (con != null) {
-                con.close();
-            }
         }
     }
 
-    public Object queryForObject(String sql, PreparedStatementSetter psSetter, RowMapper rowMapper) throws SQLException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+    public Object queryForObject(String sql, PreparedStatementSetter psSetter, RowMapper rowMapper){
         try {
-            con = ConnectionManager.getConnection();
-            pstmt = con.prepareStatement(sql);
+            Connection con = ConnectionManager.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(sql);
             psSetter.values(pstmt);
-            rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
             return rowMapper.mapRow(rs);
 
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (pstmt != null) {
-                pstmt.close();
-            }
-            if (con != null) {
-                con.close();
-            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
+
         }
     }
 
-    public void update(String sql, PreparedStatementSetter psSetter) throws SQLException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
+    public void update(String sql, PreparedStatementSetter psSetter){
         try {
-            con = ConnectionManager.getConnection();
-            pstmt = con.prepareStatement(sql);
+            Connection con = ConnectionManager.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(sql);
             psSetter.values(pstmt);
             pstmt.executeUpdate();
-        } finally {
-            if (pstmt != null) {
-                pstmt.close();
-            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
 
-            if (con != null) {
-                con.close();
-            }
         }
     }
 }

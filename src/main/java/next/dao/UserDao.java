@@ -1,47 +1,57 @@
 package next.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import next.model.User;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import next.model.User;
-
 public class UserDao {
-    public void insert(User user) throws SQLException {
+    public void insert(User user) {
         JdbcTemplate insertTmplt = new JdbcTemplate();
 
         PreparedStatementSetter psSetter = pstmt -> {
-            pstmt.setString(1, user.getUserId());
-            pstmt.setString(2, user.getPassword());
-            pstmt.setString(3, user.getName());
-            pstmt.setString(4, user.getEmail());
+            try {
+                pstmt.setString(1, user.getUserId());
+                pstmt.setString(2, user.getPassword());
+                pstmt.setString(3, user.getName());
+                pstmt.setString(4, user.getEmail());
+            } catch(SQLException e) {
+                throw new DataAccessException(e);
+            }
         };
         insertTmplt.update("INSERT INTO USERS VALUES (?, ?, ?, ?)", psSetter);
     }
 
-    public void update(User user) throws SQLException {
+    public void update(User user) {
         JdbcTemplate updateTmplt = new JdbcTemplate();
         PreparedStatementSetter psSetter = pstmt -> {
-            pstmt.setString(1, user.getPassword());
-            pstmt.setString(2, user.getName());
-            pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getUserId());
+            try {
+                pstmt.setString(1, user.getPassword());
+                pstmt.setString(2, user.getName());
+                pstmt.setString(3, user.getEmail());
+                pstmt.setString(4, user.getUserId());
+            } catch(SQLException e) {
+                throw new DataAccessException(e);
+            }
         };
         updateTmplt.update("UPDATE USERS SET password=?,name=?,email=? WHERE userId=?",  psSetter);
     }
 
-    public List<User> findAll() throws SQLException {
+    public List<User> findAll() {
         JdbcTemplate selectTmplt = new JdbcTemplate();
 
         RowMapper rowMapper = rs -> {
             List<User> users = new ArrayList<>();
-            if (rs.next()) {
-                users.add(new User(rs.getString("userId"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("email")));
+            try {
+                if (rs.next()) {
+                    users.add(new User(rs.getString("userId"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("email")));
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e);
             }
             return users;
         };
@@ -50,18 +60,26 @@ public class UserDao {
     }
 
 
-    public User findByUserId(String userId) throws SQLException {
+    public User findByUserId(String userId) {
         JdbcTemplate selectTmplt = new JdbcTemplate();
 
         PreparedStatementSetter psSetter = pstmt -> {
-            pstmt.setString(1, userId);
+            try {
+                pstmt.setString(1, userId);
+            } catch (SQLException e){
+                throw new DataAccessException(e);
+            }
         };
 
         RowMapper rowMapper = rs -> {
             User user = null;
-            if (rs.next()) {
-                user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
-                        rs.getString("email"));
+            try {
+                if (rs.next()) {
+                    user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+                            rs.getString("email"));
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e);
             }
             return user;
         };
