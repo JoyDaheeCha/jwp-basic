@@ -1,13 +1,11 @@
 package next.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.jdbc.ConnectionManager;
 import next.model.User;
 
 public class UserDao {
@@ -15,7 +13,7 @@ public class UserDao {
         JdbcTemplate insertTmplt = new JdbcTemplate(){
 
             @Override
-            void setValue(PreparedStatement pstmt) throws SQLException {
+            void setValues(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getUserId());
                 pstmt.setString(2, user.getPassword());
                 pstmt.setString(3, user.getName());
@@ -30,7 +28,7 @@ public class UserDao {
         JdbcTemplate updateTmplt = new JdbcTemplate(){
 
             @Override
-            void setValue(PreparedStatement pstmt) throws SQLException {
+            void setValues(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, user.getPassword());
                 pstmt.setString(2, user.getName());
                 pstmt.setString(3, user.getEmail());
@@ -41,65 +39,45 @@ public class UserDao {
     }
 
     public List<User> findAll() throws SQLException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        List<User> users = new ArrayList<>();
-        ResultSet rs = null;
-        try {
-            con = ConnectionManager.getConnection();
-            String sql = "SELECT userId, password, name, email FROM USERS";
-            pstmt = con.prepareStatement(sql);
-
-            rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                users.add(new User(rs.getString("userId"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("email")));
+        SelectJdbcTemplate selectTmplt = new SelectJdbcTemplate() {
+            @Override
+            Object mapRow(ResultSet rs) throws SQLException {
+                List<User> users = new ArrayList<>();
+                if (rs.next()) {
+                    users.add(new User(rs.getString("userId"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("email")));
+                }
+                return users;
             }
 
-            return users;
-        } finally {
-            if (pstmt != null) {
-                pstmt.close();
+            @Override
+            void setValues(PreparedStatement pstmt) throws SQLException {
+                // find All 에 대한 함수는 적을게 없는데..
             }
-
-            if (con != null) {
-                con.close();
-            }
-        }
+        };
+        return (List<User>) selectTmplt.query("SELECT userId, password, name, email FROM USERS");
     }
 
+
     public User findByUserId(String userId) throws SQLException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            con = ConnectionManager.getConnection();
-            String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
-            pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
-
-            rs = pstmt.executeQuery();
-
-            User user = null;
-            if (rs.next()) {
-                user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
-                        rs.getString("email"));
+        SelectJdbcTemplate selectTmplt = new SelectJdbcTemplate() {
+            @Override
+            Object mapRow(ResultSet rs) throws SQLException {
+                User user = null;
+                if (rs.next()) {
+                    user = new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+                            rs.getString("email"));
+                }
+                return user;
             }
 
-            return user;
-        } finally {
-            if (rs != null) {
-                rs.close();
+            @Override
+            void setValues(PreparedStatement pstmt) throws SQLException {
+                pstmt.setString(1, userId);
             }
-            if (pstmt != null) {
-                pstmt.close();
-            }
-            if (con != null) {
-                con.close();
-            }
-        }
+        };
+        return (User) selectTmplt.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?");
     }
 }
