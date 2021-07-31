@@ -11,14 +11,10 @@ public class UserDao {
         JdbcTemplate insertTmplt = new JdbcTemplate();
 
         PreparedStatementSetter psSetter = pstmt -> {
-            try {
-                pstmt.setString(1, user.getUserId());
-                pstmt.setString(2, user.getPassword());
-                pstmt.setString(3, user.getName());
-                pstmt.setString(4, user.getEmail());
-            } catch(SQLException e) {
-                throw new DataAccessException(e);
-            }
+            pstmt.setString(1, user.getUserId());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getName());
+            pstmt.setString(4, user.getEmail());
         };
         insertTmplt.update("INSERT INTO USERS VALUES (?, ?, ?, ?)", psSetter);
     }
@@ -26,14 +22,10 @@ public class UserDao {
     public void update(User user) {
         JdbcTemplate updateTmplt = new JdbcTemplate();
         PreparedStatementSetter psSetter = pstmt -> {
-            try {
-                pstmt.setString(1, user.getPassword());
-                pstmt.setString(2, user.getName());
-                pstmt.setString(3, user.getEmail());
-                pstmt.setString(4, user.getUserId());
-            } catch(SQLException e) {
-                throw new DataAccessException(e);
-            }
+            pstmt.setString(1, user.getPassword());
+            pstmt.setString(2, user.getName());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, user.getUserId());
         };
         updateTmplt.update("UPDATE USERS SET password=?,name=?,email=? WHERE userId=?",  psSetter);
     }
@@ -43,15 +35,11 @@ public class UserDao {
 
         RowMapper rowMapper = rs -> {
             List<User> users = new ArrayList<>();
-            try {
-                if (rs.next()) {
-                    users.add(new User(rs.getString("userId"),
-                            rs.getString("password"),
-                            rs.getString("name"),
-                            rs.getString("email")));
-                }
-            } catch (SQLException e) {
-                throw new DataAccessException(e);
+            if (rs.next()) {
+                users.add(new User(rs.getString("userId"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("email")));
             }
             return users;
         };
@@ -64,11 +52,7 @@ public class UserDao {
         JdbcTemplate selectTmplt = new JdbcTemplate();
 
         PreparedStatementSetter psSetter = pstmt -> {
-            try {
-                pstmt.setString(1, userId);
-            } catch (SQLException e){
-                throw new DataAccessException(e);
-            }
+            pstmt.setString(1, userId);
         };
 
         RowMapper rowMapper = rs -> {
