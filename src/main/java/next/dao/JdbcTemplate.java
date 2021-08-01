@@ -23,6 +23,19 @@ public class JdbcTemplate {
         }
     }
 
+    public void update(String sql, Object... parameters) throws DataAccessException {
+        try {
+            Connection con = ConnectionManager.getConnection();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            for (int i = 0; i < parameters.length; i++) {
+                pstmt.setObject(i + 1, parameters[i]);
+            }
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
+        }
+    }
+
     public <T> List<T> query(String sql, RowMapper<T> rm) throws DataAccessException {
 
         try {
