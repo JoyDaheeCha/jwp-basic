@@ -9,14 +9,13 @@ import java.sql.SQLException;
 
 public abstract class SelectJdbcTemplate {
 
-    public Object query() throws SQLException {
+    public Object query(String sql) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
 
         ResultSet rs = null;
         try {
             con = ConnectionManager.getConnection();
-            String sql = createQuery();
             pstmt = con.prepareStatement(sql);
 
             rs = pstmt.executeQuery();
@@ -33,15 +32,14 @@ public abstract class SelectJdbcTemplate {
         }
     }
 
-    public Object queryForObject() throws SQLException {
+    public Object queryForObject(String sql) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             con = ConnectionManager.getConnection();
-            String sql = createQuery();
             pstmt = con.prepareStatement(sql);
-            setValue(pstmt);
+            setValues(pstmt);
 
             rs = pstmt.executeQuery();
 
@@ -59,10 +57,7 @@ public abstract class SelectJdbcTemplate {
         }
     }
 
-    abstract void setValue(PreparedStatement pstmt) throws SQLException;
+    abstract void setValues(PreparedStatement pstmt) throws SQLException;
 
     abstract Object mapRow(ResultSet rs) throws SQLException;
-
-    abstract String createQuery();
-
 }

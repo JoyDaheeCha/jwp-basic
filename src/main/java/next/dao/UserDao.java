@@ -40,7 +40,7 @@ public class UserDao {
     public List<User> findAll() throws SQLException {
         SelectJdbcTemplate template = new SelectJdbcTemplate() {
             @Override
-            void setValue(PreparedStatement pstmt) {
+            void setValues(PreparedStatement pstmt) {
 
             }
 
@@ -56,19 +56,14 @@ public class UserDao {
 
                 return users;
             }
-
-            @Override
-            String createQuery() {
-                return "SELECT userId, password, name, email FROM USERS";
-            }
         };
-        return (List<User>) template.query();
+        return (List<User>) template.query("SELECT userId, password, name, email FROM USERS");
     }
 
     public User findByUserId(String userId) throws SQLException {
         SelectJdbcTemplate template = new SelectJdbcTemplate() {
             @Override
-            void setValue(PreparedStatement pstmt) throws SQLException {
+            void setValues(PreparedStatement pstmt) throws SQLException {
                 pstmt.setString(1, userId);
             }
 
@@ -82,12 +77,7 @@ public class UserDao {
 
                 return user;
             }
-
-            @Override
-            String createQuery() {
-                return "SELECT userId, password, name, email FROM USERS WHERE userid=?";
-            }
         };
-        return (User) template.queryForObject();
+        return (User) template.queryForObject("SELECT userId, password, name, email FROM USERS WHERE userid=?");
     }
 }
