@@ -20,13 +20,8 @@ public class UserDao {
                 pstmt.setString(3, user.getName());
                 pstmt.setString(4, user.getEmail());
             }
-
-            @Override
-            String createQuery() {
-                return "INSERT INTO USERS VALUES (?, ?, ?, ?)";
-            }
         };
-        template.update();
+        template.update("INSERT INTO USERS VALUES (?, ?, ?, ?)");
     }
 
 
@@ -40,13 +35,8 @@ public class UserDao {
                 pstmt.setString(3, user.getEmail());
                 pstmt.setString(4, user.getUserId());
             }
-
-            @Override
-            String createQuery() {
-                return "UPDATE USERS SET password=?,name=?,email=? WHERE userId=?";
-            }
         };
-        template.update();
+        template.update("UPDATE USERS SET password=?,name=?,email=? WHERE userId=?");
     }
 
     public List<User> findAll() throws SQLException {
