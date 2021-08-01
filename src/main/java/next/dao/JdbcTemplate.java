@@ -9,18 +9,18 @@ import java.sql.SQLException;
 
 public class JdbcTemplate {
 
-    public void update(String sql, PreparedStatementSetter pss) throws SQLException {
+    public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
         try {
             Connection con = ConnectionManager.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
             pss.setValues(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new SQLException(e);
+            throw new DataAccessException(e);
         }
     }
 
-    public Object query(String sql, RowMapper rm) throws SQLException {
+    public Object query(String sql, RowMapper rm) throws DataAccessException {
 
         try {
             Connection con = ConnectionManager.getConnection();
@@ -30,11 +30,11 @@ public class JdbcTemplate {
 
             return rm.mapRow(rs);
         } catch (SQLException e) {
-            throw new SQLException(e);
+            throw new DataAccessException(e);
         }
     }
 
-    public Object queryForObject(String sql, PreparedStatementSetter pss, RowMapper rm) throws SQLException {
+    public Object queryForObject(String sql, PreparedStatementSetter pss, RowMapper rm) throws DataAccessException {
         try {
             Connection con = ConnectionManager.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -44,7 +44,7 @@ public class JdbcTemplate {
 
             return rm.mapRow(rs);
         } catch (SQLException e) {
-            throw new SQLException(e);
+            throw new DataAccessException(e);
         }
     }
 }

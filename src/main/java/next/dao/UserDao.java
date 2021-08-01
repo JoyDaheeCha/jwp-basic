@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
-    public void insert(User user) throws SQLException {
+    public void insert(User user) {
 
         JdbcTemplate template = new JdbcTemplate() {};
         template.update("INSERT INTO USERS VALUES (?, ?, ?, ?)", pstmt -> {
@@ -21,7 +21,7 @@ public class UserDao {
     }
 
 
-    public void update(User user) throws SQLException {
+    public void update(User user) {
 
         JdbcTemplate template = new JdbcTemplate();
         template.update("UPDATE USERS SET password=?,name=?,email=? WHERE userId=?", pstmt -> {
@@ -32,7 +32,7 @@ public class UserDao {
         });
     }
 
-    public List<User> findAll() throws SQLException {
+    public List<User> findAll() {
         JdbcTemplate template = new JdbcTemplate();
         return (List<User>) template.query("SELECT userId, password, name, email FROM USERS", rs -> {
             List<User> users = new ArrayList<>();
@@ -47,7 +47,7 @@ public class UserDao {
         });
     }
 
-    public User findByUserId(String userId) throws SQLException {
+    public User findByUserId(String userId) {
         JdbcTemplate template = new JdbcTemplate();
         return (User) template.queryForObject(
                 "SELECT userId, password, name, email FROM USERS WHERE userid=?",
